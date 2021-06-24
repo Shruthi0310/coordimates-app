@@ -17,9 +17,8 @@ import { withNavigation } from 'react-navigation';
         "members" : [],
         "groupName": '',
         "imageUrl": '',
-        "done": false
     }
-    // const {navigation} = this.props.navigation
+    
     this.createGroup = this.createGroup.bind(this);
     
     
@@ -59,8 +58,6 @@ import { withNavigation } from 'react-navigation';
 
        db.collection('Users').doc(this.state.members[i]).collection('groups')
        .doc(this.state.groupName).set({users: this.state.members, imageUrl: this.state.imageUrl})
-
-       //this.setState({done: true})
       }
 
      
@@ -99,7 +96,7 @@ import { withNavigation } from 'react-navigation';
             ></TextInput>
         </View>
         <View style={{top: 10}}>
-        <Text style= {{fontSize:12, color:"#767676"}}>Group Image Url:</Text>
+        <Text style= {{fontSize:12, color:"#767676"}}>Group Image Url (Optional):</Text>
             <TextInput
             style={{fontSize:16, borderBottomColor: '#d3d3d3',
             borderBottomWidth: 1, padding: 6 }}

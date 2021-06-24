@@ -59,7 +59,7 @@ const userRef = db.collection('users')
 
 
 function writeUserData(userdata) {
-    navigation.navigate('Waiting')
+    navigation.replace('Waiting')
    const userId = auth?.currentUser?.email;
   userRef.doc(userId).set({data: userdata}, {merge:true});
   

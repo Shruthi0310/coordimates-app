@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import {Text, View,FlatList, Image, Linking,} from 'react-native'
 import {Icon} from 'react-native-elements'
-import { SafeAreaView } from 'react-navigation';
-import { db, auth} from '../firebase';
+import { db, auth, ad} from '../firebase';
 
 
 function ListOfPlaces({navigation}) {
@@ -25,6 +24,7 @@ function ListOfPlaces({navigation}) {
                         //console.log(x.data())
                       }) 
                       setPlaces(place)
+                      
                     })
                    //can save the place inside group firebase
                    //console.log(place);
@@ -34,6 +34,9 @@ function ListOfPlaces({navigation}) {
         })
 
     }, [])
+
+
+
 
 var bool = true;
 var interval = setInterval(
@@ -48,24 +51,39 @@ async () => {
      if(doc.data().wheelPlace == null) {
            bool = false;
      } else {
+        
         console.log(doc.data().wheelPlace)
     }
  }
   
     if(bool){
-        navigation.navigate('Selected Wheel')
+        navigation.replace('Selected Wheel')
         clearInterval(interval);
+        
     }
 
-}, 6000);
+}, 5000);
 
     function spinWheel(){
-        navigation.navigate('Spin The Wheel')
+        navigation.replace('Spin The Wheel')
     }
 
     function exit(){
+        //clear data
+        // db.collection('Groups').doc(grp).update({
+        //     ids: ad.FieldValue.delete(),
+        //     wheelPlace: ad.FieldValue.delete(),
+        //  })
+         
+        //  db.collection('users').doc(currUser).update({
+        //     data: ad.FieldValue.delete(),
+        //     group: ad.FieldValue.delete(),
+        //     who: ad.FieldValue.delete()
+        //   });
+
         navigation.navigate('Groups')
     }
+
     return (
        <View>
            <View style ={{flexDirection: 'row', top: '7%'}}>

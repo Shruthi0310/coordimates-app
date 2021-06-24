@@ -66,13 +66,31 @@ function Wheel({navigation}){
           })
         }
       )
-      //navigation.navigate('Groups')
+      navigation.navigate('Selected Wheel')
+  }
+
+  function back(){
+     navigation.navigate('List Of Places')
   }
     return (
     <View style={{top: '50%',}}>
-      <View style={{alignSelf: 'flex-start', bottom: 320, left: 360}}>
+      <View style={{alignSelf: 'flex-start', bottom: 320, flexDirection:'row'}}>
+      <TouchableOpacity 
+            onPress={back}
+            style={{marginLeft: 10, flexDirection:'row', alignItems:'center'}}
+            >
+              <Icon
+                name="chevron-back-outline"
+                type="ionicon"
+                color='blue'
+                iconStyle={{fontSize: 30}}
+              ></Icon>
+              <Text style={{color: 'blue', fontSize: 20}}>Back</Text>
+            </TouchableOpacity>
+      
       <TouchableOpacity 
             onPress={done}
+            style={{marginLeft: '65%'}}
             >
               <Icon
                 name="arrow-forward-outline"
@@ -81,7 +99,7 @@ function Wheel({navigation}){
                 iconStyle={{fontSize: 30}}
               ></Icon>
             </TouchableOpacity>
-      {/* <Text>Hello</Text> */}
+           
       </View>
      {!isLoading && (<View style={styles.container}>
         <StatusBar barStyle={'light-content'} />

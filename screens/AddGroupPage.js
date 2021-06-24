@@ -35,41 +35,15 @@ function addMembers(){
 }
 
 
-// useLayoutEffect(()=> {
-//     navigation.setOptions({
-//         headerRight: () => (
-//             <TouchableOpacity style={{ marginRight: 10}}
-//             onPress={addMembers}
-//             > 
-//               <Text style={{color:"blue", fontSize:18 }}>Done</Text>
-//             </TouchableOpacity>
-//         )
-//     })
-// })
-
     return (
       <ScrollView
         contentContainerStyle={styles.container}
         style={styles.root}
         keyboardShouldPersistTaps="handled">
-        {/* <View>
-            <Text style= {{fontSize:12, color:"#767676"}}>Group Name:</Text>
-            <TextInput
-            style={{fontSize:16, borderBottomColor: '#d3d3d3',
-            borderBottomWidth: 1, padding: 6 }}
-            placeholder="Please enter group name"
-            onChangeText = {name => setGroupName(name)}
-            ></TextInput>
-        </View> */}
         <View>
           <EmailField
-            // ref={c => this._emailField = c}
             itemId="email"
             items={data}
-            // showItems='onTyping'
-            // onChangeSelectedItems = {(selectedItems)=> console.log(selectedItems)}
-            // onSubmitEditing={val => checkIsEnabled(val)}
-            
             onChipClose={val => checkIsEnabled(val)}
           />
 
