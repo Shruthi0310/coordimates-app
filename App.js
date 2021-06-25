@@ -15,6 +15,7 @@ import Wheel from './screens/SpinTheWheel';
 import SelectedWheel from './screens/SelectedWheel';
 import ProfileScreen from './screens/Profile';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import EmailField from './components/EmailField';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -37,6 +38,7 @@ export default function App() {
                 <Stack.Screen name='Spin The Wheel' component={Wheel} options={{ headerShown: false }} />
                 <Stack.Screen name='Selected Wheel' component={SelectedWheel} options={{ headerShown: false }} />
                 <Stack.Screen name='Profile' component={ProfileScreen} />
+                <Stack.Screen name='EmailFiel' component ={EmailField} />
             </Stack.Navigator>
         </NavigationContainer>
     );

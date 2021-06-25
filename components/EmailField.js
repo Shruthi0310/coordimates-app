@@ -1,9 +1,11 @@
 import React, { Component, useLayoutEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert} from 'react-native';
 import { Chip, Selectize as ChildEmailField } from 'react-native-material-selectize';
 import { data, auth, db, ad} from '../firebase';
-import { useNavigation } from '@react-navigation/native'
-import { withNavigation } from 'react-navigation';
+import {Avatar} from 'react-native-elements'
+import { useNavigation } from '@react-navigation/native';
+
+
  class EmailField extends Component {
   static defaultProps = {
     onChipClose: () => {},
@@ -68,6 +70,17 @@ import { withNavigation } from 'react-navigation';
       .doc(this.state.groupName).set({users: this.state.members, imageUrl: this.state.imageUrl})
 
        }
+
+       
+       Alert.alert(
+        'Group Created',
+        '',
+        [
+          {text: 'OK', onPress: () => console.log('ok')},
+        ],
+        {cancelable: false},
+      );
+
   }
   
   
@@ -75,6 +88,7 @@ import { withNavigation } from 'react-navigation';
   render() {
     const { items } = this.props;
     
+
   
     return (
 
@@ -117,16 +131,23 @@ import { withNavigation } from 'react-navigation';
           placeholder: 'Add members',
           }}
           onChangeSelectedItems = {(selectedItems)=> this.setState({members: selectedItems.result})}
-          renderRow={(id, onPress, item) => (
+          renderRow={(id, onPress, items) => (
             <TouchableOpacity
                 activeOpacity={0.6}
                 key={id}
                 onPress={onPress}
                 style={styles.listRow}>
+                   
               <View style={styles.listWrapper}>
-                <View style={styles.listIcon}/>
-                <View>
-                  <Text style={styles.listNameText}>{item._id}</Text>
+                {/* <View style={styles.listIcon}/> */}
+                <Avatar
+                    avatarStyle={{ borderColor: '#d3d3d3', borderWidth: 1 }}
+                    size="medium"
+                    rounded
+                    source={{
+                      uri:'https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg'
+                    }} />
+                <View style={{marginLeft: 10, flexDirection: 'column'}}>
                   <Text style={styles.listEmailText}>{id}</Text>
                 </View>
               </View>
@@ -186,15 +207,11 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: '#fff'
   },
-  listNameText: {
-    color: 'rgba(0, 0, 0, 0.87)',
-    fontSize: 14,
-    lineHeight: 21
-  },
   listEmailText: {
-    color: 'rgba(0, 0, 0, 0.54)',
+    color: 'grey',
     fontSize: 14,
-    lineHeight: 21
+    lineHeight: 21,
+    top: 15
   }
 });
 

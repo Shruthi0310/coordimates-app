@@ -7,6 +7,7 @@ import { db, auth, ad} from '../firebase';
 
 function ListOfPlaces({navigation}) {
     const [places, setPlaces] = useState([])
+    const [ fromprev, setfromPrev] = useState(false)
     const currUser = auth?.currentUser?.email;
     var grp;
     useEffect(() => {
@@ -37,7 +38,7 @@ function ListOfPlaces({navigation}) {
 
 
 
-
+if(!fromprev) {
 var bool = true;
 var interval = setInterval(
 async () => {
@@ -57,12 +58,14 @@ async () => {
  }
   
     if(bool){
+        setfromPrev(true)
         navigation.replace('Selected Wheel')
         clearInterval(interval);
         
     }
 
-}, 5000);
+  }, 5000);
+}
 
     function spinWheel(){
         navigation.replace('Spin The Wheel')
@@ -70,22 +73,27 @@ async () => {
 
     function exit(){
         //clear data
-        // db.collection('Groups').doc(grp).update({
-        //     ids: ad.FieldValue.delete(),
-        //     wheelPlace: ad.FieldValue.delete(),
-        //  })
-         
-        //  db.collection('users').doc(currUser).update({
-        //     data: ad.FieldValue.delete(),
-        //     group: ad.FieldValue.delete(),
-        //     who: ad.FieldValue.delete()
-        //   });
+        const ref = db.collection('users').doc(currUser).get()
+        .then(doc => {
+           const grp = doc.data().group
+           db.collection('Groups').doc(grp).update({
+              ids: ad.FieldValue.delete(),
+              wheelPlace: ad.FieldValue.delete(),
+           })
+
+        })
+
+     db.collection('users').doc(currUser).update({
+        data: ad.FieldValue.delete(),
+        group: ad.FieldValue.delete(),
+        who: ad.FieldValue.delete()
+     });
 
         navigation.navigate('Groups')
     }
 
     return (
-       <View>
+       <View style={{paddingBottom: '30%'}}>
            <View style ={{flexDirection: 'row', top: '7%'}}>
            <TouchableOpacity style={styles.wheel}
            onPress={spinWheel}
@@ -114,7 +122,7 @@ async () => {
 
                 <TouchableOpacity style={styles.listItem}>
                    <Image
-                      style={{width: 300,height:200}}
+                      style={{width: 300,height:200, borderRadius: 30}}
                       source={{uri: item.image}}
                       resizeMode="contain"
                    />
@@ -148,20 +156,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#fff',
         width: '100%',
-        borderRadius: 20,
         flexDirection: "column",
         alignItems: 'center',
+        borderColor: '#e06666',
+        borderWidth: 1,
       },
       listItemText: {
         fontSize: 20,
         fontWeight: "500",
         fontFamily: "Arial",
+        
       },
       image:{
         resizeMode: 'cover',
         width: '100%',
         height: '100%',
         alignSelf:'center',
+        
       },
       wheel:{
         width: 200,

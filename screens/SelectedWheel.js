@@ -26,16 +26,22 @@ function SelectedWheel({ navigation }) {
 
    function exit() {
       //clear data
-      // db.collection('Groups').doc(grp).update({
-      //    ids: ad.FieldValue.delete(),
-      //    wheelPlace: ad.FieldValue.delete(),
-      // })
+     
+      const ref = db.collection('users').doc(currUser).get()
+         .then(doc => {
+            const grp = doc.data().group
+            db.collection('Groups').doc(grp).update({
+               ids: ad.FieldValue.delete(),
+               wheelPlace: ad.FieldValue.delete(),
+            })
 
-      // db.collection('users').doc(currUser).update({
-      //    data: ad.FieldValue.delete(),
-      //    group: ad.FieldValue.delete(),
-      //    who: ad.FieldValue.delete()
-      // });
+         })
+
+      db.collection('users').doc(currUser).update({
+         data: ad.FieldValue.delete(),
+         group: ad.FieldValue.delete(),
+         who: ad.FieldValue.delete()
+      });
       navigation.navigate('Groups')
    }
 

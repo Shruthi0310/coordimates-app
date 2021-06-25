@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect, useLayoutEffect} from 'react';
 import { ScrollView, StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
 import EmailField from '../components/EmailField';
@@ -13,26 +14,21 @@ function AddGroupPage ({navigation}){
             userarr.push(doc.data()._id)
           }
           )
+         
         }).then(()=> {
           setData(userarr)
         })
       }, [])
 
 
-  
+ 
   const [data, setData] = useState([])
   const [isEnabled, setIsEnable] = useState(false);
-  const [chosen, setChosen] = useState([])
-  const [groupName, setGroupName] = useState('')
+  
   function checkIsEnabled(val) {
      setIsEnable({ val });
   }
 
-
-
-function addMembers(){
-  console.log(chosen)  
-}
 
 
     return (

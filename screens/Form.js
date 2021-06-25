@@ -14,11 +14,12 @@ function Form({navigation}) {
 
 const activityopt= [ 
         {label:'Eat', value:'eat'},
-        {label:'Chill Games', value:'chill games'},
+        {label:'Games and Sports', value:'Games and Sports'},
         {label:'Sightseeing', value:'sightseeing'},
-        {label:'Sports', value:'sports'},
+        // {label:'Sports', value:'sports'},
         {label:'Shop', value:'shop'},
-        {label:'No preference', value:'all'}];
+        {label:'Nature and Parks', value:'Nature and parks'},
+        {label: 'Arts and Culture', value: 'Arts and Culture'}];
 
 const timeopt = [ 
         {label:'Morning', value: 'morning'},
@@ -32,7 +33,7 @@ const areaopt = [
         {label:'West', value:'west'},
         {label: 'North', value: 'north'},
         {label:'South', value: 'south'},
-        {label:'No preference', value:'all'}];
+        {label:'Central', value:'Central'}];
 
 const priceopt = [
     {label: "$", value: "$"},

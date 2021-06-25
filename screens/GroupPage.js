@@ -37,7 +37,6 @@ export default function GroupPage({ navigation }) {
   }, []);
 
 
-
   useLayoutEffect(() => {
 
     navigation.setOptions({
@@ -88,7 +87,9 @@ export default function GroupPage({ navigation }) {
 
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener('focus', 
+   
+    () => {
       var groupArr = [];
       //var membersArry = [];
       const currUser = auth?.currentUser?.email;
@@ -105,9 +106,9 @@ export default function GroupPage({ navigation }) {
         setLoading(false)
       }).catch((error) => {
         console.log("Error getting documents: ", error);
-      });
-
-    });
+      }
+      );}
+    );
     return unsubscribe;
 
   }, [navigation])
@@ -150,7 +151,7 @@ export default function GroupPage({ navigation }) {
                     size="medium"
                     rounded
                     source={{
-                      uri: (item[1].imageUrl != null) ? item[1].imageUrl : 'http://criticdaily.com/uploads/user-group/default_group.png'
+                      uri: (item[1].imageUrl != '') ? item[1].imageUrl : 'http://criticdaily.com/uploads/user-group/default_group.png'
                     }} />
                 </View>
                 <View

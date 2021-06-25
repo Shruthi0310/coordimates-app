@@ -26,14 +26,14 @@ const RegisterScreen = ({navigation}) => {
         displayName: name,
         photoURL: imageUrl ? imageUrl : "https://www.trackergps.com/canvas/images/icons/avatar.jpg"
         }).catch(function (error) {
-        alert(error.message)
+       // alert(error.message)
         });
         navigation.popToTop();
         })
         .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        alert(errorMessage)
+        //alert(errorMessage)
         });
 
         
@@ -56,7 +56,6 @@ const RegisterScreen = ({navigation}) => {
         <ImageBackground source={img} style={styles.image}>
         <View style={styles.view}>
         <Input
-        color='white'
         inputContainerStyle={styles.input}
         placeholder='Enter your name'
         placeholderTextColor='#d3d3d3'
@@ -67,7 +66,6 @@ const RegisterScreen = ({navigation}) => {
         onChangeText={text => setName(text)}
         />
         <Input
-        color='white'
         inputContainerStyle={styles.input}
         placeholder='Enter your email'
         placeholderTextColor='#d3d3d3'
@@ -78,7 +76,6 @@ const RegisterScreen = ({navigation}) => {
         onChangeText={text => setEmail(text)}
         />
         <Input
-        color='white'
        inputContainerStyle={styles.input}
        placeholder='Enter your password'
        placeholderTextColor='#d3d3d3'
@@ -89,7 +86,6 @@ const RegisterScreen = ({navigation}) => {
         secureTextEntry
         />
         <Input
-        color='white'
         inputContainerStyle={styles.input}
         placeholder='Enter your image url'
         placeholderTextColor='#d3d3d3'
