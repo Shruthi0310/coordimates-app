@@ -7,9 +7,10 @@ import { db, auth, ad} from '../firebase';
 
 function ListOfPlaces({navigation}) {
     const [places, setPlaces] = useState([])
-    const [ fromprev, setfromPrev] = useState(false)
     const currUser = auth?.currentUser?.email;
     var grp;
+    var bool = true;
+    
     useEffect(() => {
         var place =[];
         const ref = db.collection('users').doc(currUser).get()
@@ -38,8 +39,8 @@ function ListOfPlaces({navigation}) {
 
 
 
-if(!fromprev) {
-var bool = true;
+
+
 var interval = setInterval(
 async () => {
     bool = true;
@@ -52,20 +53,19 @@ async () => {
      if(doc.data().wheelPlace == null) {
            bool = false;
      } else {
-        
+        //clearInterval(interval);
         console.log(doc.data().wheelPlace)
     }
  }
   
     if(bool){
-        setfromPrev(true)
         navigation.replace('Selected Wheel')
         clearInterval(interval);
         
     }
 
   }, 5000);
-}
+
 
     function spinWheel(){
         navigation.replace('Spin The Wheel')

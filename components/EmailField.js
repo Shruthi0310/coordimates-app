@@ -76,7 +76,8 @@ import { useNavigation } from '@react-navigation/native';
         'Group Created',
         '',
         [
-          {text: 'OK', onPress: () => console.log('ok')},
+          {text: 'OK', onPress: () => {this.props.navigation.navigate('Groups')
+        }},
         ],
         {cancelable: false},
       );

@@ -26,21 +26,20 @@ export default function GroupPage({ navigation }) {
     navigation.navigate('Profile')
   }
 
-
-  const wait = (timeout) => {
-    return new Promise(resolve => setTimeout(resolve, timeout));
+  function feed(){
+    navigation.navigate('Feed')
   }
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    wait(1000).then(() => setRefreshing(false));
-  }, []);
+
+
+  
 
 
   useLayoutEffect(() => {
 
     navigation.setOptions({
       headerLeft: () => (
+        <View style={{flexDirection: 'row'}}>
         <TouchableOpacity style={{ marginLeft: 20 }}
           onPress={create}
         >
@@ -51,6 +50,17 @@ export default function GroupPage({ navigation }) {
             iconStyle={{ fontSize: 30 }}
           ></Icon>
         </TouchableOpacity>
+        <TouchableOpacity style={{ marginLeft: 10 }}
+          onPress={feed}
+        >
+          <Icon
+            name="people-outline"
+            type="ionicon"
+            color='blue'
+            iconStyle={{ fontSize: 30 }}
+          ></Icon>
+        </TouchableOpacity>
+        </View>
       ),
       headerRight: () => (
         <View style={{flexDirection: 'row'}}>
@@ -85,6 +95,39 @@ export default function GroupPage({ navigation }) {
   })
 
 
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+
+  
+  function getData(){
+      var groupArr = [];
+      //var membersArry = [];
+      const currUser = auth?.currentUser?.email;
+      const mem = db.collection('Users').doc(currUser).collection('groups').get()
+
+      mem.then((query) => {
+        var num = 0;
+        query.forEach(doc => {
+          const arr = [doc.id, doc.data()]
+          groupArr.push(arr)
+        });
+        setGroups(groupArr);
+        //setMembers(membersArry);
+        //setRefreshing(false)
+        wait(1000).then(()=>setRefreshing(false))
+        setLoading(false)
+      }).catch((error) => {
+        console.log("Error getting documents: ", error);
+      }
+      );
+  }
+
+  function onRefresh(){
+    setRefreshing(true)
+    setGroups([])
+    getData()
+  }
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', 

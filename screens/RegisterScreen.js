@@ -49,7 +49,7 @@ const RegisterScreen = ({navigation}) => {
             });
             return unsubscribe;
             }, [])
-    const img = {uri: 'https://wallpaperarc.com/wp-content/uploads/2020/07/macOS-Big-Sur-Wallpaper-1440x3168-6-360x640.jpg'}
+    const img = {uri: 'https://cdn-0.idownloadblog.com/wp-content/uploads/2021/04/abstract-iPhone-wallpaper-rshbfn-idownloadblog-Warp-1.png'}
  //const img = {uri: 'https://image.freepik.com/free-vector/abstract-background-mobile-fluid-shapes-with-gradient-effect_79603-560.jpg'}
     return (
         <View style={styles.container}>

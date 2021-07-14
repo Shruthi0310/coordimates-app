@@ -41,6 +41,7 @@ function AddGroupPage ({navigation}){
             itemId="email"
             items={data}
             onChipClose={val => checkIsEnabled(val)}
+            navigation={navigation}
           />
 
         </View>

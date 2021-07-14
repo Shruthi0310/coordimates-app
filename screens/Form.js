@@ -33,7 +33,7 @@ const areaopt = [
         {label:'West', value:'west'},
         {label: 'North', value: 'north'},
         {label:'South', value: 'south'},
-        {label:'Central', value:'Central'}];
+        {label:'Central', value:'central'}];
 
 const priceopt = [
     {label: "$", value: "$"},

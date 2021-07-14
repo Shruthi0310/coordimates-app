@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect } from 'react'
 import { ImageBackground } from 'react-native'
 import { ScrollView } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 import { View, Text, StyleSheet, Image, Modal } from 'react-native'
-import { Input, Button, Avatar } from 'react-native-elements'
+import { Input, Button, Avatar, Icon } from 'react-native-elements'
 import { auth, db } from '../firebase'
 import DialogInput from 'react-native-dialog-input'
 
@@ -12,14 +12,38 @@ function ProfileScreen({ navigation }) {
     const [name, setName] = useState(false)
     const [email, setEmail] = useState(false)
     const [image, setImage] = useState(false)
-
+    const [refresh, setRefresh] = useState(false)
     const user = auth?.currentUser
 
+    function onRefresh(){
+       setRefresh(!refresh)
+    } 
+
+    useLayoutEffect(() => {
+
+        navigation.setOptions({
+          headerRight: () => (
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity
+              style={{marginRight: 10}}
+              onPress={onRefresh}
+            >
+              <Icon
+                name="refresh-outline"
+                type="ionicon"
+                color='blue'
+                iconStyle={{ fontSize: 30 }}
+              ></Icon>
+            </TouchableOpacity>
+            </View>
+          )
+        })
+      })
 
     function submitPass(text) {
         setPass(!pass);
         user.updatePassword(text).then(() => {
-
+          
         }).catch((error) => {
 
         });
@@ -33,7 +57,7 @@ function ProfileScreen({ navigation }) {
         setName(!name);
         user.updateProfile({
             displayName: text
-        })
+        }) 
     }
 
     function showName() {
@@ -144,6 +168,17 @@ function ProfileScreen({ navigation }) {
                         }
                         closeDialog={showName}>
                     </DialogInput>
+
+                    <View style={styles.item}>
+                        <View style={styles.iconContent}>
+                            <Image style={styles.icon} source={{ uri: "https://img.icons8.com/ios/64/000000/external-place-delivery-kiranshastry-gradient-kiranshastry-1.png" }} />
+                        </View>
+                        <View style={styles.infoContent}>
+                            <TouchableOpacity>
+                                <Text style={styles.info}>Collection of Suggested Places</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
 
                     {/* <View style={styles.item}>
                     <View style={styles.iconContent}>
