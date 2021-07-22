@@ -54,7 +54,7 @@ export default function GroupPage({ navigation }) {
           onPress={feed}
         >
           <Icon
-            name="people-outline"
+            name="newspaper-outline"
             type="ionicon"
             color='blue'
             iconStyle={{ fontSize: 30 }}

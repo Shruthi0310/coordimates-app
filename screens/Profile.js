@@ -2,10 +2,13 @@ import React, { useState, useEffect, useLayoutEffect } from 'react'
 import { ImageBackground } from 'react-native'
 import { ScrollView } from 'react-native'
 import { TouchableOpacity } from 'react-native'
-import { View, Text, StyleSheet, Image, Modal } from 'react-native'
+import { View, Text, StyleSheet, Image} from 'react-native'
 import { Input, Button, Avatar, Icon } from 'react-native-elements'
 import { auth, db } from '../firebase'
 import DialogInput from 'react-native-dialog-input'
+import { Modal } from 'react-native-paper'
+import { FlatList } from 'react-native-gesture-handler'
+import { Rating} from 'react-native-elements';
 
 function ProfileScreen({ navigation }) {
     const [pass, setPass] = useState(false)
@@ -13,14 +16,64 @@ function ProfileScreen({ navigation }) {
     const [email, setEmail] = useState(false)
     const [image, setImage] = useState(false)
     const [refresh, setRefresh] = useState(false)
+    const [visible, setVisible] = useState(false)
+    const [places, setPlaces] = useState([])
+    const [review, setReview] = useState(false)
+    const[rev, setRev]= useState([])
+    const[loading, setLoading]= useState(false)
+    const [placeName, setplaceName] = useState('')
+    const[leaveaRev, setLeaveaRev] = useState(false)
+    const [ userRating, setuserRating] = useState('')
+    const[ userReview, setuserReview] = useState('')
     const user = auth?.currentUser
 
     function onRefresh(){
        setRefresh(!refresh)
     } 
 
-    useLayoutEffect(() => {
+    function hideReview(){
+        setReview(false)
 
+    }
+    function openReview(rev){
+        setReview(!review)
+        setLoading(true)
+        if(rev.reviews == null) {
+          setRev([{name: 'No reviews yet', review: 'Be the first to leave a review', rating: 5}])
+        }else{
+          setRev(rev.reviews)
+        }
+        setplaceName(rev.id)
+        console.log(rev.id)
+        console.log(rev.reviews)
+        setLoading(false)
+        }
+
+    function leaveAReview(){
+        setLeaveaRev(!leaveaRev)
+      }
+
+      function submitReview(){
+        const userId = auth?.currentUser.displayName;
+        db.collection('Places').doc(placeName).update({
+          reviews: ad.FieldValue.arrayUnion({
+            name: userId,
+            rating: userRating,
+            review: userReview
+          })
+        })
+        setLeaveaRev(!leaveaRev)
+       }
+    
+    useEffect(()=> {
+        const currUser = auth?.currentUser?.email;
+        db.collection('Users').doc(currUser).get()
+        .then(doc=>{
+            setPlaces(doc.data().suggestedPlaces)
+        })
+    })
+
+    useLayoutEffect(() => {
         navigation.setOptions({
           headerRight: () => (
             <View style={{flexDirection: 'row'}}>
@@ -64,15 +117,6 @@ function ProfileScreen({ navigation }) {
         setName(!name);
     }
 
-    // function submitEmail(text) {
-    //     setEmail(!email);
-    //     console.log(text)
-    // }
-
-    // function showEmail() {
-    //     setEmail(!email);
-    // }
-
     function submitImage(text) {
         setImage(!image);
         user.updateProfile({
@@ -85,6 +129,9 @@ function ProfileScreen({ navigation }) {
     }
 
 
+    function showCollection(){
+          setVisible(!visible)
+    }
 
     return (
         <View >
@@ -171,41 +218,104 @@ function ProfileScreen({ navigation }) {
 
                     <View style={styles.item}>
                         <View style={styles.iconContent}>
-                            <Image style={styles.icon} source={{ uri: "https://img.icons8.com/ios/64/000000/external-place-delivery-kiranshastry-gradient-kiranshastry-1.png" }} />
+                            <Image style={styles.icon} source={{ uri: "https://img.icons8.com/bubbles/50/000000/place-marker.png" }} />
                         </View>
                         <View style={styles.infoContent}>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress = {showCollection}>
                                 <Text style={styles.info}>Collection of Suggested Places</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
-
-                    {/* <View style={styles.item}>
-                    <View style={styles.iconContent}>
-                        <Image style={styles.icon} source={{ uri: 'https://img.icons8.com/bubbles/50/000000/email--v1.png' }} />
-                    </View>
-                    <View style={styles.infoContent}>
-                        <TouchableOpacity onPress={showEmail}>
-                            <Text style={styles.info}>Change Email</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <DialogInput isDialogVisible={email}
-                    title={"Change Email"}
-                    message={"Please enter new email"}
-                    hintInput={"email"}
-                    submitInput={(inputText) => {
-                        submitEmail(inputText)
-                    }
-                    }
-                    closeDialog={showEmail}>
-                </DialogInput> */}
-                    {/* <TouchableOpacity style={styles.logout} onPress={signOut}>
-                        <Text style={styles.logoutText}>Log Out</Text>
-                    </TouchableOpacity> */}
+                   
                 </View>
 
             </View>
+            <Modal visible={visible} onDismiss={showCollection} style={styles.Modal}>
+                        <FlatList
+                        data={places}
+                        keyExtractor= {item => item.id}
+                        renderItem={({ item }) => (
+                            <View>
+                                <TouchableOpacity style={styles.listItem} onPress={() => openReview(item)}>
+                   <Image
+                      style={{width: 300,height:200, borderRadius: 30}}
+                      source={{uri: item.image}}
+                      resizeMode="contain"
+                   />
+                   
+                    <Text style={styles.listItemText}>{`${item.id}`}</Text>
+                    <Text>Place description</Text>
+                    <Text>Place rating</Text>
+                    <Text style={{color: 'blue'}}
+                           onPress={() => Linking.openURL('http://google.com')}>
+                        Link to page website</Text>
+                    </TouchableOpacity>
+                            </View>
+
+                        )}
+                        >
+                            
+                        </FlatList>
+
+                        {!loading && (<Modal visible={review} onDismiss={hideReview} style={styles.reviewModal}>
+                        <Text style={{fontWeight: 'bold', fontSize: 25, marginLeft: 10, paddingBottom: 10}}>
+                          {`${placeName}`}
+                          </Text>
+                         <View style={{flexDirection: 'row'}}>
+                         <Text style={{fontSize: 20, marginBottom: 20, marginLeft: 10}}>Reviews:</Text>
+                         <TouchableOpacity style={styles.leaveReview} onPress={leaveAReview}>
+                           <Text style={styles.leaveReviewText}>Leave a review</Text>
+                         </TouchableOpacity>
+                         </View>
+                         <FlatList
+                         data={rev}
+                         keyExtractor={item => item.name}
+                         renderItem={({ item }) => (
+                           <TouchableOpacity>
+                           <View style={styles.reviewItem}>
+                              <Text style={{fontSize:18, fontWeight:'bold', textTransform: 'uppercase'}}>{`${item.name}`}</Text>
+                             <Text style={styles.reviewItemText}>"{`${item.review}`}"</Text>
+                             <Rating
+                              ratingCount={5}
+                              imageSize={20}
+                              startingValue={Number(item.rating)}
+                              readonly={true}
+                             ></Rating>
+                           </View>
+                           </TouchableOpacity>
+                         )}
+                         >
+
+                         </FlatList>
+                         </Modal>)}
+
+                         <Modal visible={leaveaRev} onDismiss={leaveAReview} style={{width: 500, height: 500, backgroundColor: 'white'}}>
+          <Text style={{fontWeight: 'bold', fontSize: 16, marginLeft: 10}}>
+            Rating
+          </Text>
+          <Rating
+          onFinishRating={rate => setuserRating(rate)}
+          style={{ paddingVertical: 10, marginRight: 280}}
+          />
+          <Input
+        inputContainerStyle={styles.input}
+        placeholder='Write your review'
+        placeholderTextColor='#c3c3c3'
+        label='Review'
+        labelStyle={{color:'black'}}
+        value={userReview}
+        onChangeText={text => setuserReview(text)}
+        multiline={true}
+        />
+        <TouchableOpacity style={{backgroundColor: 'pink', 
+          width: 100,height: 30, alignItems: 'center', alignSelf: 'center'}}
+            onPress={submitReview}
+          >
+          <Text style={{fontSize: 19, color: 'white'}}>Submit</Text>
+        </TouchableOpacity>
+          </Modal>
+        </Modal>
+
         </View>
     )
 }
@@ -278,7 +388,63 @@ const styles = StyleSheet.create({
         color: 'white',
         alignSelf: 'center',
         top: '15%'
-    }
+    },
+    Modal:{
+        width: '100%',
+        height:'60%',
+        backgroundColor: 'pink',
+        borderColor: 'grey',
+        borderWidth: 1,
+        marginRight: 100
+      },
+      listItem: {
+        paddingBottom: '5%',
+        paddingTop: 20,
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        width: '100%',
+        flexDirection: "column",
+        alignItems: 'center',
+        borderColor: '#e06666',
+        borderWidth: 1,
+      },
+      listItemText: {
+        fontSize: 20,
+        fontWeight: "500",
+        fontFamily: "Arial",
+        
+      },
+      reviewModal:{
+        height: 200,
+        width: 500, 
+        backgroundColor: 'white',
+     },
+     reviewItem:{
+        width: 400,
+        height: 100,
+        padding: 20,
+        borderBottomColor: 'grey',
+        borderBottomWidth: 1,
+        borderTopColor: 'grey',
+        borderTopWidth: 1
+    },
+    reviewItemText:{
+        fontSize: 18
+    },
+    leaveReview:{
+        borderWidth: 1, 
+        borderColor: 'grey', 
+        width: 150,
+        height: 28,
+        backgroundColor: 'pink',
+        alignItems: 'center',
+        borderRadius: 10,
+        marginLeft: 150
+      },
+      leaveReviewText:{
+        fontSize: 19,
+        color: 'white'
+      },
 
 });
 

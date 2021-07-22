@@ -36,9 +36,9 @@ const areaopt = [
         {label:'Central', value:'central'}];
 
 const priceopt = [
-    {label: "$", value: "$"},
-    {label: "$$", value: "$$"},
-    {label: "$$$", value: "$$$"}
+    {label: "$0 - $15", value: "$"},
+    {label: "$0 - $40", value: "$$"},
+    {label: "$0 - >$40", value: "$$$"}
 ];
 
 const outorinopt = [
@@ -47,12 +47,20 @@ const outorinopt = [
     {label: 'No preference', value: 'all'}
 ]
 
+const ratingopt = [
+    {label: '>=1', value: '1'},
+    {label: '>=2', value: '2'},
+    {label: '>=3', value: '3'},
+    {label: '>=4', value: '4'},
+    {label: '5', value: '5'}
+]
+
 const[area, setArea] = useState([])
 const[time, setTime] = useState([])
 const[price, setPrice] = useState('$')
 const[outorin, setOutorin] = useState('out')
 const[activity, setActivity] = useState([])
-
+const[rating, setRating] = useState('>=1')
 
 
 const ref = db.collection('Places')
@@ -69,18 +77,28 @@ function writeUserData(userdata) {
   function onSubmit(){
     var arr = [];
     const hello = ref.where("price", "==", price)
-    .where("outorin", "==", outorin)
+    // .where("outorin", "==", outorin)
     .where("area", "in", area.map(e => e.value))
     .get()
     .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
             for(var i=0; i < time.length; i++){
                  for(var j=0;  j < activity.length; j++) {
-                    if((doc.data().type == activity.map(e=>e.value)[j])
-                    && (doc.data().time == time.map(e=>e.value)[i])){
+                    if((doc.data().type == activity.map(e=>e.value)[j])) {
+                    if(time.map(e=>e.value)[i] == "morning" || time.map(e=>e.value)[i] == "afternoon"||
+                    time.map(e=>e.value)[i] == "night"){
+                        if(doc.data().time == "all" || doc.data().time == time.map(e=>e.value)[i]) {
+                            //if(doc.data().rating >= rating) {
+                            arr.push(doc.data())
+                            //}
+                        }
+                    } else if((doc.data().time == time.map(e=>e.value)[i])){
+                      // if(doc.data().rating >= rating) {
                        arr.push(doc.data())
                       console.log(arr)
-             }
+                      // }
+                    }
+                 }
              }
             }
         
@@ -111,8 +129,10 @@ return (
                         items={timeopt}
                         selectedItems={time}
                         onSelectionsChange={selectedItems => setTime(selectedItems)}/>
+    <Text style={styles.outorin}> Select rating:</Text>
+        <SwitchSelector style={{top:85}} options={ratingopt} initial={0} onPress={value=> setRating(value)}/>                    
     <Text style={styles.outorin}> Select indoors or outdoors:</Text>
-        <SwitchSelector style={{top:85}} options={outorinopt} initial={0} onPress={value=> setOutorin(value)}/>
+        <SwitchSelector style={{top:95}} options={outorinopt} initial={0} onPress={value=> setOutorin(value)}/>
     <Text style={styles.activity}>Select type of activities: </Text>
         <SelectMultiple style= {{top: 115, height: 190}}
                         items={activityopt}

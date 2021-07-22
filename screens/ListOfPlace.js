@@ -3,10 +3,16 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 import {Text, View,FlatList, Image, Linking,} from 'react-native'
 import {Icon} from 'react-native-elements'
 import { db, auth, ad} from '../firebase';
-
+import { Modal } from 'react-native-paper'
+import { Rating} from 'react-native-elements';
 
 function ListOfPlaces({navigation}) {
     const [places, setPlaces] = useState([])
+    const[visible, setVisible] = useState(false)
+    const[review, setReview] = useState('')
+    const[loading, setLoading] = useState(false)
+    const [revPlace, setrevPlace] = useState('')
+
     const currUser = auth?.currentUser?.email;
     var grp;
     var bool = true;
@@ -19,15 +25,24 @@ function ListOfPlaces({navigation}) {
             db.collection('Groups').doc(doc.data().group).get().then(
                 query => {
                     //console.log(query.data().ids)
-                   db.collection('Places').where("id", "in", query.data().ids).get()
-                   .then(next => {
-                      next.forEach( x => {
-                        place.push(x.data())
-                        //console.log(x.data())
-                      }) 
-                      setPlaces(place)
+                    for(var i=0; i< query.data().ids.length; i++){
+                      db.collection('Places').where("id", "==", query.data().ids[i]).get()
+                      .then(next => {
+                        next.forEach(x => {
+                          place.push(x.data())
+                        })
+                        setPlaces(place)
+                      })
+                    }
+                  //  db.collection('Places').where("id", "in", query.data().ids).get()
+                  //  .then(next => {
+                  //     next.forEach( x => {
+                  //       place.push(x.data())
+                  //       //console.log(x.data())
+                  //     }) 
+                  //     setPlaces(place)
                       
-                    })
+                  //   })
                    //can save the place inside group firebase
                    //console.log(place);
                 }   
@@ -92,6 +107,22 @@ async () => {
         navigation.navigate('Groups')
     }
 
+    function openReviews(rev){
+      setVisible(!visible)
+      setLoading(true)
+      if(rev.reviews == null) {
+        setReview([{name: 'No reviews yet', review: 'Be the first to leave a review', rating: 5}])
+      }else{
+        setReview(rev.reviews)
+      }
+      setrevPlace(rev.id)
+      setLoading(false)
+    }
+
+    function hideReview(){
+      setVisible(!visible)
+    }
+
     return (
        <View style={{paddingBottom: '30%'}}>
            <View style ={{flexDirection: 'row', top: '7%'}}>
@@ -120,7 +151,9 @@ async () => {
             renderItem={({ item }) => (
                 <View>
 
-                <TouchableOpacity style={styles.listItem}>
+                <TouchableOpacity style={styles.listItem}
+                   onPress = {() => openReviews(item)}
+                >
                    <Image
                       style={{width: 300,height:200, borderRadius: 30}}
                       source={{uri: item.image}}
@@ -134,11 +167,38 @@ async () => {
                            onPress={() => Linking.openURL('http://google.com')}>
                         Link to page website</Text>
                 </TouchableOpacity>
-                
                 </View>
             )}
            >
            </FlatList>
+
+          {!loading && (<Modal visible={visible} onDismiss={hideReview} style={styles.Modal}>
+
+            <Text style={{fontWeight: 'bold', fontSize: 25, marginLeft: 10, paddingBottom: 10}}>
+                          {`${revPlace}`}
+                          </Text>
+                         <Text style={{fontSize: 20, marginBottom: 20, marginLeft: 10}}>Reviews:</Text>
+                         <FlatList
+                         data={review}
+                         keyExtractor={item => item.name}
+                         renderItem={({ item }) => (
+                           <TouchableOpacity>
+                           <View style={styles.reviewItem}>
+                              <Text style={{fontSize:18, fontWeight:'bold', textTransform: 'uppercase'}}>{`${item.name}`}</Text>
+                             <Text style={styles.reviewItemText}>"{`${item.review}`}"</Text>
+                             <Rating
+                              ratingCount={5}
+                              imageSize={20}
+                              startingValue={Number(item.rating)}
+                              readonly={true}
+                             ></Rating>
+                           </View>
+                           </TouchableOpacity>
+                         )}
+                         >
+
+                    </FlatList>
+           </Modal>)}
        </View>
     );
 
@@ -189,7 +249,25 @@ const styles = StyleSheet.create({
           marginTop: 12,
           fontSize: 20,
           color: '#efefef'
-      }
+      },
+      Modal:{
+        height: 500,
+        width: 500, 
+        backgroundColor: 'white',
+        marginTop: '25%'
+     },
+     reviewItem:{
+      width: 400,
+      height: 100,
+      padding: 20,
+      borderBottomColor: 'grey',
+      borderBottomWidth: 1,
+      borderTopColor: 'grey',
+      borderTopWidth: 1
+  },
+  reviewItemText:{
+      fontSize: 18
+  },
 })
 
 export default ListOfPlaces;

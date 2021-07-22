@@ -14,6 +14,11 @@ function SelectedWheel({ navigation }) {
             grp = doc.data().group
             db.collection('Groups').doc(doc.data().group).get()
                .then(query => {
+                  const ref = db.collection('Users').doc(currUser)
+                 
+               ref.update({
+                   suggestedPlaces: ad.FieldValue.arrayUnion(query.data().wheelPlace)
+                })
                   setPlace(query.data().wheelPlace);
                   //console.log(query.data().wheelPlace.image)
                   setLoading(false);
