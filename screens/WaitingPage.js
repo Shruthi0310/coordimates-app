@@ -8,9 +8,12 @@ const[done, setDone] = useState(false)
 
 var users = [];
 useEffect(() => {
+    let isCancelled = false;
     const currUser = auth?.currentUser?.email;
     db.collection('users').doc(currUser).get().then(query =>{
-    users = query.data().who;
+        if (!isCancelled) {
+            users = query.data().who;
+          }
     })
 })
 
@@ -18,6 +21,7 @@ useEffect(() => {
 var bool = true;
 var interval = setInterval(
 async () => {
+    let isCancelled = false;
     bool = true;
     for(var i =0; i< users.length; i++){
     const ref = db.collection('users').doc(users[i])
@@ -36,7 +40,9 @@ async () => {
     if(bool){
         //console.log('done')
         var arrs = [];
+        if (!isCancelled) {
         setDone(true)
+        }
         for(var i =0; i < users.length; i++) {
             const ref = db.collection('users').doc(users[i])
             const doc = await ref.get()
@@ -50,6 +56,10 @@ async () => {
         }
         clearInterval(interval);
     }
+
+return () => {
+    isCancelled = true;
+  };
 
 }, 10000);
    

@@ -6,6 +6,7 @@ import { db, auth, ad} from '../firebase';
 import { Modal } from 'react-native-paper'
 import { Rating} from 'react-native-elements';
 
+
 function ListOfPlaces({navigation}) {
     const [places, setPlaces] = useState([])
     const[visible, setVisible] = useState(false)
@@ -18,6 +19,7 @@ function ListOfPlaces({navigation}) {
     var bool = true;
     
     useEffect(() => {
+      let isCancelled = false;
         var place =[];
         const ref = db.collection('users').doc(currUser).get()
         .then(doc => {
@@ -31,37 +33,31 @@ function ListOfPlaces({navigation}) {
                         next.forEach(x => {
                           place.push(x.data())
                         })
-                        setPlaces(place)
+                        if (!isCancelled) {
+                          setPlaces(place)
+                        }
                       })
                     }
-                  //  db.collection('Places').where("id", "in", query.data().ids).get()
-                  //  .then(next => {
-                  //     next.forEach( x => {
-                  //       place.push(x.data())
-                  //       //console.log(x.data())
-                  //     }) 
-                  //     setPlaces(place)
-                      
-                  //   })
-                   //can save the place inside group firebase
-                   //console.log(place);
                 }   
             )
             
         })
 
+        return () => {
+          isCancelled = true;
+        };
+
     }, [])
-
-
 
 
 
 var interval = setInterval(
 async () => {
+   let isCancelled = false;
     bool = true;
     const ref = db.collection('Groups').doc(grp)
     const doc = await ref.get()
-      
+    if (!isCancelled) {
     if (!doc.exists) {
         bool = false;
  } else {
@@ -78,6 +74,10 @@ async () => {
         clearInterval(interval);
         
     }
+  }
+  return () => {
+    isCancelled = true;
+  };
 
   }, 5000);
 
@@ -100,7 +100,6 @@ async () => {
 
      db.collection('users').doc(currUser).update({
         data: ad.FieldValue.delete(),
-        group: ad.FieldValue.delete(),
         who: ad.FieldValue.delete()
      });
 

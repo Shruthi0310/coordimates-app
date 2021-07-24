@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react'
 import { ImageBackground } from 'react-native'
 import { ScrollView } from 'react-native'
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { View, Text, StyleSheet, Image} from 'react-native'
 import { Input, Button, Avatar, Icon } from 'react-native-elements'
-import { auth, db } from '../firebase'
+import { auth, db, ad } from '../firebase'
 import DialogInput from 'react-native-dialog-input'
 import { Modal } from 'react-native-paper'
 import { FlatList } from 'react-native-gesture-handler'
 import { Rating} from 'react-native-elements';
+import { NavigationContainer } from '@react-navigation/native'
 
 function ProfileScreen({ navigation }) {
     const [pass, setPass] = useState(false)
@@ -25,6 +26,7 @@ function ProfileScreen({ navigation }) {
     const[leaveaRev, setLeaveaRev] = useState(false)
     const [ userRating, setuserRating] = useState('')
     const[ userReview, setuserReview] = useState('')
+
     const user = auth?.currentUser
 
     function onRefresh(){
@@ -51,6 +53,7 @@ function ProfileScreen({ navigation }) {
 
     function leaveAReview(){
         setLeaveaRev(!leaveaRev)
+        setReview(!review)
       }
 
       function submitReview(){
@@ -63,14 +66,23 @@ function ProfileScreen({ navigation }) {
           })
         })
         setLeaveaRev(!leaveaRev)
+        setReview(!review)
        }
     
     useEffect(()=> {
+        let isCancelled = false;
         const currUser = auth?.currentUser?.email;
         db.collection('Users').doc(currUser).get()
         .then(doc=>{
-            setPlaces(doc.data().suggestedPlaces)
+            
+            if (!isCancelled) {
+                setPlaces(doc.data().suggestedPlaces)
+              }
         })
+
+        return () => {
+      isCancelled = true;
+    };
     })
 
     useLayoutEffect(() => {
@@ -221,7 +233,7 @@ function ProfileScreen({ navigation }) {
                             <Image style={styles.icon} source={{ uri: "https://img.icons8.com/bubbles/50/000000/place-marker.png" }} />
                         </View>
                         <View style={styles.infoContent}>
-                            <TouchableOpacity onPress = {showCollection}>
+                            <TouchableOpacity onPress = {()=> navigation.navigate('Collection')}>
                                 <Text style={styles.info}>Collection of Suggested Places</Text>
                             </TouchableOpacity>
                         </View>
@@ -288,7 +300,7 @@ function ProfileScreen({ navigation }) {
 
                          </FlatList>
                          </Modal>)}
-
+                         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                          <Modal visible={leaveaRev} onDismiss={leaveAReview} style={{width: 500, height: 500, backgroundColor: 'white'}}>
           <Text style={{fontWeight: 'bold', fontSize: 16, marginLeft: 10}}>
             Rating
@@ -314,6 +326,7 @@ function ProfileScreen({ navigation }) {
           <Text style={{fontSize: 19, color: 'white'}}>Submit</Text>
         </TouchableOpacity>
           </Modal>
+          </TouchableWithoutFeedback>
         </Modal>
 
         </View>

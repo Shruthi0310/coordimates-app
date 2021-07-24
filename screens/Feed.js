@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect, useReducer } from 'react'
-import { TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
+import { TouchableOpacity, StyleSheet, ScrollView, Keyboard} from 'react-native';
 import {Text, View,FlatList, Image, Linking,} from 'react-native'
 import {Icon, Input} from 'react-native-elements'
 import { Modal } from 'react-native-paper'
@@ -24,11 +24,16 @@ function Feed({navigation}) {
     const[leaveaRev, setLeaveaRev] = useState(false)
     const [ userRating, setuserRating] = useState('')
     const[ userReview, setuserReview] = useState('')
+    const [refresh, setRefresh] = useState(false)
+
+    function onRefresh(){
+      setRefresh(!refresh)
+   }
 
   const price_list = [
-    { label: "$", value: "$" },
-    { label: "$$", value: "$$" },
-    { label: "$$$", value: "$$$" },
+    { label: "$", value: "15" },
+    { label: "$$", value: "40" },
+    { label: "$$$", value: "200" },
   ];
 
   const area_list = [
@@ -89,6 +94,18 @@ function Feed({navigation}) {
         
           headerRight: () => (
             <View style={{flexDirection: 'row'}}>
+              {/* <TouchableOpacity
+              style={{marginRight: 10}}
+              onPress={onRefresh}
+            >
+              <Icon
+                name="refresh-outline"
+                type="ionicon"
+                color='blue'
+                iconStyle={{ fontSize: 30 }}
+              ></Icon>
+            </TouchableOpacity> */}
+
               <TouchableOpacity
               style={{marginRight: 10}}
               onPress={showModal}
@@ -113,20 +130,57 @@ function Feed({navigation}) {
       function applyFilter(){
         var arr = [];
         setPlaces([])
-        const ref = db.collection('Places')
-        const hello = ref.where("price", "==", price)
-        .where("outorin", "==", outorin)
-        .where('area', "==", area )
-        .where('type', '==', activity)   //add ratings after added to database
-        .get()
-        .then(query => {
-          query.forEach( doc => {
-            arr.push(doc.data())
+        var ref = db.collection('Places')
+
+        if(outorin != '') {
+          ref = ref.where("outorin", "==", outorin)
+        }
+
+       
+        
+
+        if(area != '') {
+          ref = ref.where('area', "==", area )
+        }
+        if(activity != '') {
+          ref= ref.where('type', '==', activity)   
+        }
+
+        if(price != '') {
+          ref = ref.get()
+          .then(query => {
+            query.forEach( doc => {
+              if(Number(price) >= doc.data().price) {
+                 if(rating != '') {
+                   if(Number(rating) <= doc.data().rating) {
+                  arr.push(doc.data())
+                   }
+                 } else{
+                   arr.push(doc.data())
+                 }
+              }
+            })
+            //
+             setVisible(false)
+             setPlaces(arr)
           })
-          //
-           setVisible(false)
-           setPlaces(arr)
-        })
+         }else{
+           ref=ref.get()
+           .then(query => {
+             query.forEach(doc => {
+              if(rating != '') {
+                if(Number(rating) <= doc.data().rating) {
+               arr.push(doc.data())
+                }
+              } else{
+                arr.push(doc.data())
+              }
+             })
+             setVisible(false)
+             setPlaces(arr)
+           })
+         }
+        
       }
 
       function clearFilter(){
@@ -154,26 +208,31 @@ function Feed({navigation}) {
           setRev(rev.reviews)
         }
         setplaceName(rev.id)
-        console.log(rev.id)
-        console.log(rev.reviews)
+        // console.log(rev.id)
+        // console.log(rev.reviews)
         setLoading(false)
         }
 
      function submitReview(){
       const userId = auth?.currentUser.displayName;
-      db.collection('Places').doc(placeName).update({
-        reviews: ad.FieldValue.arrayUnion({
-          name: userId,
-          rating: userRating,
-          review: userReview
-        })
-      })
+      db.collection('Places').where('id', '==', placeName).get()
+      .then(query => query.forEach(doc => {
+       db.collection('Places').doc(doc.id).update({
+           reviews: ad.FieldValue.arrayUnion({
+             name: userId,
+             rating: userRating,
+             review: userReview
+           })
+         })
+      }
+
+   ))
       setLeaveaRev(!leaveaRev)
      }
 
     return (
-       <View style={{flexDirection: 'row'}}>
-         
+       <View style={{flexDirection: 'column'}}>
+          <Text style={{alignSelf: 'center', color: 'grey'}}>Please click on the places to view reviews</Text>
            <FlatList
             data={places}
             keyExtractor= {item => item.id}
@@ -182,23 +241,31 @@ function Feed({navigation}) {
                    <TouchableOpacity  style={styles.listItem} onPress={() => openReview(item)}>
                    <Image
                       style={{width: 300,height:200, borderRadius: 30}}
-                      source={{uri: 'https://cdn-cdmoj.nitrocdn.com/aMXvDVbOTxUQVHZUrOLYcprbySihZhas/assets/static/optimized/blog/wp-content/uploads/2017/04/00c2bc583cc64f6563be675617e2d6e1.Gardens-by-the-Bay-Singapore.jpg'}}
+                      source={{uri: item.image == null? 'https://cdn-cdmoj.nitrocdn.com/aMXvDVbOTxUQVHZUrOLYcprbySihZhas/assets/static/optimized/blog/wp-content/uploads/2017/04/00c2bc583cc64f6563be675617e2d6e1.Gardens-by-the-Bay-Singapore.jpg': item.image}}
                       resizeMode="contain"
                    />
                    <Text style={styles.listItemText}>{`${item.id}`}</Text>
-                   <Text>Place description</Text>
-                    <Text>Place rating</Text>
+                   <Text style={{fontStyle: 'italic'}}>{`${item.description != null? item.description: 'No description yet'}`}</Text>
+                   <Text>Location: {`${item.area}`}</Text>
+                   <Text>{`${item.price <= 15 ? '$': ((item.price >15 && item.price <= 40)? '$$': '$$$')}`}</Text>
+                   <Rating
+                              ratingCount={5}
+                              imageSize={20}
+                              startingValue={Number(item.rating)}
+                              readonly={true}
+                             ></Rating>
                     <Text style={{color: 'blue'}}
-                           onPress={() => Linking.openURL('http://google.com')}>
-                        Link to page website</Text>
+                           onPress={() => Linking.openURL(item.web != null? item.web:'http://google.com')}>
+                        Go to website</Text>
                    </TouchableOpacity>
                  
                 </View>
             )}
            >
            </FlatList>
-
+           
            {!loading && (<Modal visible={review} onDismiss={hideReview} style={styles.reviewModal}>
+               <View style={{width: 500, height: 450, paddingBottom: 10, paddingTop: 10 }}>
                         <Text style={{fontWeight: 'bold', fontSize: 25, marginLeft: 10, paddingBottom: 10}}>
                           {`${placeName}`}
                           </Text>
@@ -228,6 +295,7 @@ function Feed({navigation}) {
                          >
 
                          </FlatList>
+                         </View>
             </Modal>)}
 
           <Modal visible={leaveaRev} onDismiss={leaveAReview} style={{width: 500, height: 500, backgroundColor: 'white'}}>
@@ -404,7 +472,7 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: "column",
         alignItems: 'center',
-        borderColor: '#e06666',
+        borderColor: 'grey',
         borderWidth: 1,
       },
       listItemText: {
@@ -419,22 +487,6 @@ const styles = StyleSheet.create({
         height: '100%',
         alignSelf:'center',
         
-      },
-      wheel:{
-        width: 200,
-        height:50,
-        borderRadius: 50,
-        borderColor: 'white',
-        backgroundColor: '#e06666',
-        flexDirection:'column', 
-        // top: '7%',
-        marginLeft: '25%'
-      },
-      wheelText: {
-          alignSelf: 'center',
-          marginTop: 12,
-          fontSize: 20,
-          color: '#efefef'
       },
       Modal:{
         width: 500,

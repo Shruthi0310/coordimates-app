@@ -17,6 +17,7 @@ import ProfileScreen from './screens/Profile';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EmailField from './components/EmailField';
 import Feed from './screens/Feed';
+import CollectionPlaces from './screens/CollectionPlaces';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -41,6 +42,7 @@ export default function App() {
                 <Stack.Screen name='Profile' component={ProfileScreen} />
                 <Stack.Screen name='EmailFiel' component ={EmailField} />
                 <Stack.Screen name="Feed" component={Feed} />
+                <Stack.Screen name="Collection" component={CollectionPlaces} />
             </Stack.Navigator>
         </NavigationContainer>
     );

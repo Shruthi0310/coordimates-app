@@ -7,6 +7,7 @@ import {db} from "../firebase"
 
 function AddGroupPage ({navigation}){
 
+  
     useEffect(() => {
         var userarr = [];
         db.collection('Users').get().then((querySnapshot) => {

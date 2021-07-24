@@ -9,6 +9,8 @@ function SelectedWheel({ navigation }) {
    const currUser = auth?.currentUser?.email;
    var grp;
    useEffect(() => {
+      let isSubscribed = true;
+
       const ref = db.collection('users').doc(currUser).get()
          .then(doc => {
             grp = doc.data().group
@@ -17,7 +19,7 @@ function SelectedWheel({ navigation }) {
                   const ref = db.collection('Users').doc(currUser)
                  
                ref.update({
-                   suggestedPlaces: ad.FieldValue.arrayUnion(query.data().wheelPlace)
+                   suggestedPlaces: ad.FieldValue.arrayUnion(query.data().wheelPlace.id)
                 })
                   setPlace(query.data().wheelPlace);
                   //console.log(query.data().wheelPlace.image)
@@ -26,7 +28,7 @@ function SelectedWheel({ navigation }) {
                )
 
          })
-
+         return () => (isSubscribed = false)
    }, [])
 
    function exit() {
@@ -35,6 +37,7 @@ function SelectedWheel({ navigation }) {
       const ref = db.collection('users').doc(currUser).get()
          .then(doc => {
             const grp = doc.data().group
+            //console.log(grp)
             db.collection('Groups').doc(grp).update({
                ids: ad.FieldValue.delete(),
                wheelPlace: ad.FieldValue.delete(),
@@ -44,7 +47,6 @@ function SelectedWheel({ navigation }) {
 
       db.collection('users').doc(currUser).update({
          data: ad.FieldValue.delete(),
-         group: ad.FieldValue.delete(),
          who: ad.FieldValue.delete()
       });
       navigation.navigate('Groups')
@@ -52,6 +54,15 @@ function SelectedWheel({ navigation }) {
 
    function back() {
       navigation.navigate('List Of Places')
+      const ref = db.collection('users').doc(currUser).get()
+         .then(doc => {
+            const grp = doc.data().group
+            //console.log(grp)
+            db.collection('Groups').doc(grp).update({
+               wheelPlace: ad.FieldValue.delete(),
+            })
+
+         })
    }
 
    return (

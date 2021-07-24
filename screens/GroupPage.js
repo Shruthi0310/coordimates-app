@@ -9,6 +9,7 @@ export default function GroupPage({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
+
   const signOut = () => {
     auth.signOut().then(() => {
       navigation.replace("Login");
@@ -130,6 +131,7 @@ export default function GroupPage({ navigation }) {
   }
 
   useEffect(() => {
+    let isCancelled = false;
     const unsubscribe = navigation.addListener('focus', 
    
     () => {
@@ -144,15 +146,23 @@ export default function GroupPage({ navigation }) {
           const arr = [doc.id, doc.data()]
           groupArr.push(arr)
         });
-        setGroups(groupArr);
+        
+        if (!isCancelled) {
+          setGroups(groupArr);
         //setMembers(membersArry);
         setLoading(false)
+        }
+        
       }).catch((error) => {
         console.log("Error getting documents: ", error);
       }
-      );}
+      )
+      ;}
     );
-    return unsubscribe;
+    return () => {
+      isCancelled = true;
+      unsubscribe;
+    };
 
   }, [navigation])
 

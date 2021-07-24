@@ -36,10 +36,12 @@ const areaopt = [
         {label:'Central', value:'central'}];
 
 const priceopt = [
-    {label: "$0 - $15", value: "$"},
-    {label: "$0 - $40", value: "$$"},
-    {label: "$0 - >$40", value: "$$$"}
+    {label: "$0 - $15", value: '15'},
+    {label: "$0 - $40", value: '40'},
+    {label: "$0 - >$40", value: '200'}
 ];
+
+//stopped at 45 firebase
 
 const outorinopt = [
     {label: 'outdoors', value: 'out'},
@@ -48,19 +50,18 @@ const outorinopt = [
 ]
 
 const ratingopt = [
-    {label: '>=1', value: '1'},
-    {label: '>=2', value: '2'},
-    {label: '>=3', value: '3'},
-    {label: '>=4', value: '4'},
-    {label: '5', value: '5'}
+    {label: '≥1', value: '1'},
+    {label: '≥2', value: '2'},
+    {label: '≥3', value: '3'},
+    {label: '≥4', value: '4'},
 ]
 
 const[area, setArea] = useState([])
 const[time, setTime] = useState([])
-const[price, setPrice] = useState('$')
+const[price, setPrice] = useState(0)
 const[outorin, setOutorin] = useState('out')
 const[activity, setActivity] = useState([])
-const[rating, setRating] = useState('>=1')
+const[rating, setRating] = useState('≥1')
 
 
 const ref = db.collection('Places')
@@ -76,8 +77,9 @@ function writeUserData(userdata) {
 
   function onSubmit(){
     var arr = [];
-    const hello = ref.where("price", "==", price)
-    // .where("outorin", "==", outorin)
+    const hello = ref
+    //.where("price", "<=", price)
+    //.where("rating", ">=", rating)
     .where("area", "in", area.map(e => e.value))
     .get()
     .then((querySnapshot) => {
@@ -85,18 +87,20 @@ function writeUserData(userdata) {
             for(var i=0; i < time.length; i++){
                  for(var j=0;  j < activity.length; j++) {
                     if((doc.data().type == activity.map(e=>e.value)[j])) {
-                    if(time.map(e=>e.value)[i] == "morning" || time.map(e=>e.value)[i] == "afternoon"||
-                    time.map(e=>e.value)[i] == "night"){
-                        if(doc.data().time == "all" || doc.data().time == time.map(e=>e.value)[i]) {
-                            //if(doc.data().rating >= rating) {
+                    if(time.map(e=>e.value)[i] == 'morning' || time.map(e=>e.value)[i] == 'afternoon'||
+                    time.map(e=>e.value)[i] == 'night'){
+                        if(doc.data().time == 'all' || doc.data().time == time.map(e=>e.value)[i]) {  
+                            if(Number(doc.data().rating) >= Number(rating) 
+                            && Number(doc.data().price) <= Number(price)) {
                             arr.push(doc.data())
-                            //}
+                            }
                         }
-                    } else if((doc.data().time == time.map(e=>e.value)[i])){
-                      // if(doc.data().rating >= rating) {
-                       arr.push(doc.data())
+                    } else if(('all' == time.map(e=>e.value)[i])){
+                       if(Number(doc.data().rating) >= Number(rating)
+                       && Number(doc.data().price) <= Number(price)) {
+                      arr.push(doc.data())
                       console.log(arr)
-                      // }
+                    }
                     }
                  }
              }
@@ -131,8 +135,8 @@ return (
                         onSelectionsChange={selectedItems => setTime(selectedItems)}/>
     <Text style={styles.outorin}> Select rating:</Text>
         <SwitchSelector style={{top:85}} options={ratingopt} initial={0} onPress={value=> setRating(value)}/>                    
-    <Text style={styles.outorin}> Select indoors or outdoors:</Text>
-        <SwitchSelector style={{top:95}} options={outorinopt} initial={0} onPress={value=> setOutorin(value)}/>
+    {/* <Text style={styles.outorin}> Select indoors or outdoors:</Text>
+        <SwitchSelector style={{top:95}} options={outorinopt} initial={0} onPress={value=> setOutorin(value)}/> */}
     <Text style={styles.activity}>Select type of activities: </Text>
         <SelectMultiple style= {{top: 115, height: 190}}
                         items={activityopt}
