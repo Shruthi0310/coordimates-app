@@ -18,7 +18,7 @@ const activityopt= [
         {label:'Sightseeing', value:'sightseeing'},
         // {label:'Sports', value:'sports'},
         {label:'Shop', value:'shop'},
-        {label:'Nature and Parks', value:'Nature and parks'},
+        {label:'Nature and Parks', value:'Nature and Parks'},
         {label: 'Arts and Culture', value: 'Arts and Culture'}];
 
 const timeopt = [ 
@@ -99,7 +99,6 @@ function writeUserData(userdata) {
                        if(Number(doc.data().rating) >= Number(rating)
                        && Number(doc.data().price) <= Number(price)) {
                       arr.push(doc.data())
-                      console.log(arr)
                     }
                     }
                  }

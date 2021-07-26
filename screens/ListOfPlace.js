@@ -155,16 +155,22 @@ async () => {
                 >
                    <Image
                       style={{width: 300,height:200, borderRadius: 30}}
-                      source={{uri: item.image}}
+                      source={{uri: item.image == null?'https://picsum.photos/300/200': item.image}}
                       resizeMode="contain"
                    />
                    
                     <Text style={styles.listItemText}>{`${item.id}`}</Text>
-                    <Text>Place description</Text>
-                    <Text>Place rating</Text>
+                    <Text style={{fontStyle: 'italic'}}>{`${item.description != null? item.description: 'No description yet'}`}</Text>
+                   <Text>Location: {`${item.area}`}</Text>
+                    <Rating
+                              ratingCount={5}
+                              imageSize={20}
+                              startingValue={Number(item.rating)}
+                              readonly={true}
+                             ></Rating>
                     <Text style={{color: 'blue'}}
-                           onPress={() => Linking.openURL('http://google.com')}>
-                        Link to page website</Text>
+                           onPress={() => Linking.openURL(item.web != null? item.web:'http://google.com')}>
+                        Go to website</Text>
                 </TouchableOpacity>
                 </View>
             )}

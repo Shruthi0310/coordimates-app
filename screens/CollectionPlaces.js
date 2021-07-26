@@ -98,7 +98,8 @@ function CollectionPlaces({navigation}) {
                       resizeMode="contain"
                    />
                    <Text style={styles.listItemText}>{`${item.id}`}</Text>
-                   <Text>Place description</Text>
+                   <Text style={{fontStyle: 'italic'}}>{`${item.description != null? item.description: 'No description yet'}`}</Text>
+                   <Text>Location: {`${item.area}`}</Text>
                    <Rating
                               ratingCount={5}
                               imageSize={20}
@@ -106,8 +107,8 @@ function CollectionPlaces({navigation}) {
                               readonly={true}
                              ></Rating>
                     <Text style={{color: 'blue'}}
-                           onPress={() => Linking.openURL(item.web != null? item.web: 'http://google.com')}>
-                        Link to page website</Text>
+                           onPress={() => Linking.openURL(item.web != null? item.web:'http://google.com')}>
+                        Go to website</Text>
                    </TouchableOpacity>
                  
                 </View>

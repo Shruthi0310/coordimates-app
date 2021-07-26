@@ -50,11 +50,11 @@ function Feed({navigation}) {
   ]
 
   const activity_list =[
-    { label: "Games & Sports", value: "Games & Sports" },
+    { label: "Games & Sports", value: "Games and Sports" },
     { label: "Shop", value: "shop" },
-    { label: "Nature & Parks", value: "Nature & Parks" },
+    { label: "Nature & Parks", value: "Nature and Parks" },
     { label: "Eat", value: "eat" },
-    { label: "Arts & Culture", value: "Arts & Culture" },
+    { label: "Arts & Culture", value: "Arts and Culture" },
     { label: "Sightseeing", value: "sightseeing" },
   ]
 
@@ -229,7 +229,7 @@ function Feed({navigation}) {
    ))
       setLeaveaRev(!leaveaRev)
      }
-
+     
     return (
        <View style={{flexDirection: 'column'}}>
           <Text style={{alignSelf: 'center', color: 'grey'}}>Please click on the places to view reviews</Text>
@@ -241,7 +241,7 @@ function Feed({navigation}) {
                    <TouchableOpacity  style={styles.listItem} onPress={() => openReview(item)}>
                    <Image
                       style={{width: 300,height:200, borderRadius: 30}}
-                      source={{uri: item.image == null? 'https://cdn-cdmoj.nitrocdn.com/aMXvDVbOTxUQVHZUrOLYcprbySihZhas/assets/static/optimized/blog/wp-content/uploads/2017/04/00c2bc583cc64f6563be675617e2d6e1.Gardens-by-the-Bay-Singapore.jpg': item.image}}
+                      source={{uri: item.image == null?'https://picsum.photos/300/200': item.image}}
                       resizeMode="contain"
                    />
                    <Text style={styles.listItemText}>{`${item.id}`}</Text>

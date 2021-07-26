@@ -9,9 +9,7 @@ import WheelOfFortune from 'react-native-wheel-of-fortune';
 function Wheel({navigation}){
     const[places,setPlaces] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    var wheelOptions = {
-
-    }
+    
     useEffect(() => {
         var place = [];
         const currUser = auth?.currentUser?.email;
@@ -39,6 +37,8 @@ function Wheel({navigation}){
    WheelOfFortune.child._onPress();
   };
 
+  //https://www.u-createcrafts.com/wp-content/uploads/2013/05/ping-triangle.png
+  
     var wheelOptions = {
       rewards: places,
       knobSize: 30,
